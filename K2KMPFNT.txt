@@ -6,15 +6,14 @@ GPAGE 0,0,0:GCLS 0
 ? "ﾌｫﾝﾄ ﾉ ﾃﾞｰﾀ ｦ ｻｸｾｲ ｼﾃｲﾏｽ..."
 GOSUB @INITFONT
 GOSUB @MAKEFONTDATA:GOSUB @SAVEFONTDATA
-? "ｼｭｳﾘｮｳｼﾏｼﾀ"
-LOCATE 0,23
+? "ｶﾝﾘｮｳ ｼﾏｼﾀ"
 
-'-----
+'====================
 ' ﾆﾎﾝｺﾞ ﾋｮｳｼﾞ ｻﾝﾌﾟﾙ
-'-----
+'====================
 SCREEN=0  ' ﾓｼﾞ ｦ ｶｸ ｶﾞﾒﾝ(0~1)
 GCOLOR 15 ' ﾓｼﾞ ﾉ ｲﾛ (0~255)
-POSX=0:POSY=24  ' ﾓｼﾞ ｦ ｶｸ ｻﾞﾋｮｳ
+POSX=0:POSY=30  ' ﾓｼﾞ ｦ ｶｸ ｻﾞﾋｮｳ
 RESTORE @TXTDATA
 
 @READTXTDATA
@@ -41,21 +40,24 @@ DATA "323F242B255C253F25732472322124372446242F244024352424212521252125"
 DATA "_"
 
 
-'=====================
-' ﾆﾎﾝｺﾞ ﾋｮｳｼﾞ ﾖｳ
-'=====================
+'========================
+' ﾆﾎﾝｺﾞ ﾋｮｳｼﾞ ﾖｳ ｻﾌﾞﾙｰﾁﾝ
+'========================
 @INITFONT
- ROW=0:CELL=0   ' JIS ｺｰﾄﾞ ﾖｳ
- INDEX=0        ' 1-1 ｶﾗ ｶｿﾞｴﾀ ｶｽﾞ (ﾎｾｲｱﾘ)
- FONTDATA$=""   ' ﾓｼﾞ ﾃﾞｰﾀ
- CHRDATA$=""    ' ｷｬﾗｸﾀｰﾃﾞｰﾀ
- BOTTOMPAGE=1   ' ｼﾀｶﾞﾒﾝ ﾋｮｳｼﾞ ﾍﾟｰｼﾞ (0~3)
- FONTPAGE=3     ' ﾌｫﾝﾄﾃﾞｰﾀ ﾍﾟｰｼﾞ     (0~3)
+ ROW=0:CELL=0 'JIS ｺｰﾄﾞ ﾖｳ
+ INDEX=0      '1-1 ｶﾗ ｶｿﾞｴﾀ ｶｽﾞ (ﾎｾｲｱﾘ)
+ FONTDATA$="" 'ﾓｼﾞ ﾃﾞｰﾀ
+ CHRDATA$=""  'ｷｬﾗｸﾀ ﾃﾞｰﾀ
+ BOTTOMPAGE=1 'ｼﾀｶﾞﾒﾝ ﾋｮｳｼﾞﾍﾟｰｼﾞ (0~3)
+ FONTPAGE=3   'ﾌｫﾝﾄﾃﾞｰﾀ ﾍﾟｰｼﾞ    (0~3)
 
- FONTWIDTH=9        ' ﾓｼﾞ ﾉ ﾊﾊﾞ
- FONTHEIGHT=10      ' ﾓｼﾞ ﾉ ﾀｶｻ
- FONTLETERSPACING=1 ' ﾓｼﾞ ﾉ ｶﾝｶｸ
- FONTLINESPACING=1  ' ｷﾞｮｳ ﾉ ｶﾝｶｸ
+ POSX=0:POSY=0  'ﾓｼﾞ ｦ ｶｸ ｻﾞﾋｮｳ
+ BASEPOSX=0     'ﾓｼﾞ ｦ ｶｸ ｷｼﾞｭﾝ
+
+ FONTWIDTH=9        ' ﾓｼﾞ ﾊﾊﾞ
+ FONTHEIGHT=10      ' ﾓｼﾞ ﾀｶｻ
+ FONTLETERSPACING=1 ' ﾓｼﾞ ｶﾝｶｸ
+ FONTLINESPACING=1  ' ｷﾞｮｳ ｶﾝｶｸ
 
  FONTGRP$="GRP"+STR$(FONTPAGE)
  FONTNAME$="MPLSFNT"
@@ -70,10 +72,15 @@ DATA "_"
  POSX=X*(FONTWIDTH+FONTLETERSPACING):POSY=Y*(FONTHEIGHT+FONTLINESPACING)
  RETURN
 '=====
+@NEWLINEPOS 'ｶｲｷﾞｮｳ
+ POSX=BASEPOSX
+ POSY=POSY+FONTHEIGHT+FONTLINESPACING
+ RETURN
+'=====
 @DRAWFONTCHR
-' INPUT : SCREEN, POSX, POSY, ROW, CELL
+' INPUT : SCREEN, POSX, POSY,
+'         ROW, CELL
 ' // GCOLOR ﾃﾞ ｲﾛ ｦ ｼﾃｲｽﾙ
-
  GOSUB @GETFONTDATA
  IF SCREEN==0 THEN GPAGE SCREEN ELSE GPAGE SCREEN,BOTTOMPAGE,BOTTOMPAGE
  _X=0:_Y=0:_T$=""
@@ -84,7 +91,6 @@ DATA "_"
   _T$=MID$(FONTDATA$,_I,1)
   IF _T$!="0" THEN GPSET _X,_Y
  NEXT
-
  RETURN
 '=====
 @DRAWFONTCHR2
@@ -97,9 +103,8 @@ DATA "_"
 ' INPUT : POSX, POSY, TEXTDATA$
  _L=FLOOR(LEN(TEXTDATA$)/4)-1
  BASEPOSX=POSX
- FOR DRAWTEXT_I=0 TO _L
-  _I=DRAWTEXT_I
-  JISCODE$=MID$(TEXTDATA$,_I*4,4)
+ FOR _CNT=0 TO _L
+  JISCODE$=MID$(TEXTDATA$,_CNT*4,4)
   IF JISCODE$=="0D0A" THEN GOSUB @NEWLINEPOS:GOTO @DRAWTEXTSKIP
   GOSUB @JCODE2CODEPOINT
   GOSUB @DRAWFONTCHR2
@@ -158,11 +163,6 @@ DATA "_"
   _T$=MID$(JISCODE$,0,2):ROW=VAL("&H"+_T$)-32
   _T$=MID$(JISCODE$,2,2):CELL=VAL("&H"+_T$)-32
  RETURN
-'=====
-@NEWLINEPOS 'ｶｲｷﾞｮｳ
- POSX=BASEPOSX
- POSY=POSY+FONTHEIGHT+FONTLINESPACING
- RETURN
 
 '=====================
 ' GRP ｦ ﾒﾓﾘ ﾄｼﾃ ﾂｶｳ
@@ -179,18 +179,18 @@ DATA "_"
 ' 2ｼﾝｽｳ ﾍﾝｶﾝ
 '=====================
 @NUM2BINSTR
-'INPUT : NUM // 2ｼﾝｽｳ ﾆ ｽﾙｶｽﾞ
-'OUTPUT: BIN$ // 2ｼﾝｽｳ ﾆ ﾍﾝｶﾝ ｼﾀ ｶｽﾞ
+'INPUT : NUM  //2ｼﾝｽｳ ﾆ ｽﾙ ｶｽﾞ
+'OUTPUT: BIN$ //2ｼﾝｽｳ ﾆ ｼﾀ ﾓｼﾞﾚﾂ
  _N=NUM:R=0:BIN$=""
-'-----
 @NUM2BINSTRLOOP
  IF _N==0 THEN RETURN
  _R=_N%2:_N=FLOOR(_N/2):BIN$=STR$(_R)+BIN$
  GOTO @NUM2BINSTRLOOP
 
-'=====================
-' ﾌｫﾝﾄ ﾃﾞｰﾀ ｻｸｾｲ ﾖｳ
-'=====================
+
+'===========================
+' ﾌｫﾝﾄ ﾃﾞｰﾀ ｻｸｾｲ ﾖｳ ｻﾌﾞﾙｰﾁﾝ
+'===========================
 @SAVEFONTDATA
  ? FONTGRP$;"->";FONTNAME$
  SAVE FONTGRP$+":"+FONTNAME$
@@ -201,7 +201,6 @@ DATA "_"
  GPAGE 1,FONTPAGE,BOTTOMPAGE
  GCLS 0
  _I=0
-'-----
 @MAKEFONTDATAI
  READ _D$:IF _D$=="" GOTO @MAKEFONTDATAIBRK
  _L=LEN(_D$)-1
@@ -219,8 +218,8 @@ DATA "_"
  RETURN
 '=====
 @MPLUSFONTDATA
-' M+ BITMAP FONTS
-' COPYRIGHT 2002-2008 M+ FONTS PROJECT 
+' M+ BITMAP FONTS (9x10 ver.)
+' (C) 2002-2005 COZ
 DATA "000000000000000000000000000000000000000000401000"
 DATA "00000000000000C090481800000000000000000060303000"
 DATA "000000000000000060300000000000000000C06000000000"
